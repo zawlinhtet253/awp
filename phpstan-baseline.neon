@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.phpstan.org/c/baseline-schema.json",
+  "phpstan.neon": {
+    "parameters": {
+      "ignoreErrors": [
+        {"message": "#^Call to an undefined method Illuminate\\\\Support\\\\Facades\\\\Route::#"},
+        {"message": "#^Access to an undefined property Illuminate\\\\Support\\\\Facades\\\\#"},
+        {"message": "#^Call to static method.*on class Illuminate\\\\Support\\\\Facades\\\\#"}
+      ]
+    }
+  }
+}
