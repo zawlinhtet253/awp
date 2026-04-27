@@ -19,8 +19,11 @@ class ClientFactory extends Factory
     {
         return [
             'name' => fake()->company(),
-            'industry' => fake()->randomElement(['Technology', 'Healthcare', 'Finance', 'Retail', 'Manufacturing', 'Education', 'Real Estate', 'Consulting']),
-            'registered_address' => fake()->address(),
+            'registration_number' => fake()->unique()->numerify('REG#######'),
+            'address' => fake()->address(),
+            'phone' => fake()->phoneNumber(),
+            'email' => fake()->unique()->safeEmail(),
+            'active' => fake()->boolean(80), // 80% chance of being active
         ];
     }
 }

@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // No errors detected in the route definitions.
 Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
+
+Route::get('/clients', [ClientController::class, 'clients']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'user']);
