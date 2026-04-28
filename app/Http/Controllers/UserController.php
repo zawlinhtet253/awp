@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -53,4 +54,13 @@ class UserController extends Controller
             'user' => $user
         ]);
     }
+
+    public function partners(Request $request) {
+        $users = User::where('role', 'partner')->get();
+        return response()->json([
+            'message' => 'Partners retrieved successfully',
+            'partners' => $users,
+        ]);
+    }
+    
 }

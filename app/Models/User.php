@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -30,5 +31,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function createdEngagements(): HasMany
+    {
+        return $this->hasMany(Engagement::class, 'created_by');
+    }
+
+    public function engagementStaff(): HasMany
+    {
+        return $this->hasMany(EngagementStaff::class, 'user_id');
+    }
+
+    public function assignedEngagementStaff(): HasMany
+    {
+        return $this->hasMany(EngagementStaff::class, 'assigned_by');
     }
 }

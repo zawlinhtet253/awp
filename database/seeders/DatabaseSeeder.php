@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Client;
+use App\Models\Engagement;
 use App\Models\IndustryType;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
     {
         User::factory(20)->create();
         Client::factory(30)->create();
+        Engagement::factory(20)->create();
 
         // Create admin user only if it doesn't exist
         if (!User::where('email', 'admin@example.com')->exists()) {
@@ -36,6 +38,9 @@ class DatabaseSeeder extends Seeder
 
         // Seed client-industry relationships
         $this->seedClientIndustryRelationships();
+
+        // Seed engagement staff assignments
+        $this->seedEngagementStaff();
     }
 
     /**
@@ -179,5 +184,78 @@ class DatabaseSeeder extends Seeder
     }
 
     $this->command->info("Created {$total} relationships.");
+}
+
+/**
+ * Seed engagement staff assignments with role matching and minimum requirements
+ */
+private function seedEngagementStaff(): void
+{
+    $engagements = Engagement::all();
+    
+    foreach ($engagements as $engagement) {
+        // Get the partner who created the engagement
+        $partnerUser = User::find($engagement->created_by);
+        
+        // Ensure the creator is a partner
+        if ($partnerUser->role !== 'partner') {
+            // Find a partner user to reassign
+            $partnerUser = User::where('role', 'partner')->first();
+            if ($partnerUser) {
+                $engagement->update(['created_by' => $partnerUser->id]);
+            }
+        }
+        
+        // Get users with specific roles for this engagement
+        $partner = $partnerUser;
+        $manager = User::where('role', 'manager')->inRandomOrder()->first();
+        $senior = User::where('role', 'senior')->inRandomOrder()->first();
+        $staff = User::where('role', 'staff')->inRandomOrder()->first();
+        
+        // Create staff assignments with role matching user role
+        $staffAssignments = [
+            ['user' => $partner, 'role' => 'partner'],
+            ['user' => $manager, 'role' => 'manager'],
+            ['user' => $senior, 'role' => 'senior'],
+            ['user' => $staff, 'role' => 'staff'],
+        ];
+        
+        foreach ($staffAssignments as $assignment) {
+            if ($assignment['user']) {
+                \App\Models\EngagementStaff::create([
+                    'engagement_id' => $engagement->id,
+                    'user_id' => $assignment['user']->id,
+                    'role_on_engagement' => $assignment['role'],
+                    'assigned_by' => $partner->id,
+                    'assigned_at' => now(),
+                ]);
+            }
+        }
+        
+        // Add some additional random staff members if available
+        $assignedUserIds = array_map(function($assignment) {
+            return $assignment['user']->id;
+        }, array_filter($staffAssignments, function($assignment) {
+            return !is_null($assignment['user']);
+        }));
+        
+        $additionalUsers = User::whereIn('role', ['staff', 'senior'])
+            ->whereNotIn('id', $assignedUserIds)
+            ->inRandomOrder()
+            ->limit(rand(0, 3))
+            ->get();
+        
+        foreach ($additionalUsers as $user) {
+            \App\Models\EngagementStaff::create([
+                'engagement_id' => $engagement->id,
+                'user_id' => $user->id,
+                'role_on_engagement' => $user->role,
+                'assigned_by' => $partner->id,
+                'assigned_at' => now(),
+            ]);
+        }
+    }
+    
+    $this->command->info("Created engagement staff assignments for " . $engagements->count() . " engagements");
 }
 }

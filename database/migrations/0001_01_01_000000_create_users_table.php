@@ -12,7 +12,7 @@ return new class extends Migration {
         DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 
         DB::statement('DROP TYPE IF EXISTS user_role;');
-        DB::statement("CREATE TYPE user_role AS ENUM ('admin', 'staff', 'senior', 'patner', 'manager');");
+        DB::statement("CREATE TYPE user_role AS ENUM ('admin', 'staff', 'senior', 'partner', 'manager');");
 
         Schema::create('users', function (Blueprint $table) {
             $table->id('id');
@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->string('photo')->nullable();
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['admin', 'staff', 'senior', 'patner', 'manager'])->default('user');       
+            $table->enum('role', ['admin', 'staff', 'senior', 'partner', 'manager'])->default('user');       
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
         });

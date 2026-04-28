@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'photo' => fake()->imageUrl(200, 200, 'people', true), // random profile image
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'role' => fake()->randomElement(['admin', 'staff', 'senior', 'patner', 'manager']), // enum value
+            'role' => fake()->randomElement(['admin', 'staff', 'senior', 'partner', 'manager']), // enum value
         ];
     }
 
