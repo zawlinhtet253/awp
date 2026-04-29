@@ -12,6 +12,11 @@ class ClientController extends Controller
             return [
                 'id' => $client->id,
                 'name' => $client->name,
+                'registration_number' => $client->registration_number,
+                'address' => $client->address,  
+                'name' => $client->name,
+                'phone' => $client->phone,
+                'active' => $client->active,
                 'industries' => $client->industryTypes->pluck('name')
             ];
         });
