@@ -6,15 +6,28 @@ use App\Http\Controllers\EngagementController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// No errors detected in the route definitions.
+// Public routes (no authentication required)
 Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
+
+// Public data routes
 Route::get('/partners', [UserController::class, 'partners']);
 Route::get('/engagements', [EngagementController::class, 'engagements']);
 Route::get('/clients', [ClientController::class, 'clients']);
 
-Route::middleware('auth:sanctum')->group(function () {    
+Route::get('/industry_types', [ClientController::class, 'industryTypes']);
+
+// Protected routes (authentication required)
+Route::middleware('auth:sanctum')->group(function () {
+    // Engagement routes
     Route::post('/engagement', [EngagementController::class, 'create']);
+    
+    
+    // User routes
     Route::get('/user', [UserController::class, 'user']);
     Route::post('/user', [UserController::class, 'update']);
+    
+    // Client routes
     Route::post('/client', [ClientController::class, 'create']);
+    Route::get('/clients/{id}', [ClientController::class, 'client']);
+    Route::put('/clients/{id}', [ClientController::class, 'update']);
 });
