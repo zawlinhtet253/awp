@@ -16,4 +16,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/engagement', [EngagementController::class, 'create']);
     Route::get('/user', [UserController::class, 'user']);
     Route::post('/user', [UserController::class, 'update']);
+    Route::post('/client', [ClientController::class, 'create']);
 });
