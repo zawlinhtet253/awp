@@ -13,7 +13,7 @@ Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
 Route::get('/partners', [UserController::class, 'partners']);
 Route::get('/engagements', [EngagementController::class, 'engagements']);
 Route::get('/clients', [ClientController::class, 'clients']);
-
+Route::get('/clients/{id}', [ClientController::class, 'client']);
 Route::get('/industry_types', [ClientController::class, 'industryTypes']);
 
 // Protected routes (authentication required)
@@ -28,6 +28,5 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Client routes
     Route::post('/client', [ClientController::class, 'create']);
-    Route::get('/clients/{id}', [ClientController::class, 'client']);
     Route::put('/clients/{id}', [ClientController::class, 'update']);
 });

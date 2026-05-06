@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Client;
 use App\Models\Engagement;
+use App\Models\FsMapping;
 use App\Models\IndustryType;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -41,6 +42,9 @@ class DatabaseSeeder extends Seeder
 
         // Seed engagement staff assignments
         $this->seedEngagementStaff();
+
+        // Seed fs_mappings from grouping-1.json
+        $this->seedFsMappings();
     }
 
     /**
@@ -258,4 +262,51 @@ private function seedEngagementStaff(): void
     
     $this->command->info("Created engagement staff assignments for " . $engagements->count() . " engagements");
 }
+
+    /**
+     * Seed fs_mappings from grouping-1.json
+     */
+    private function seedFsMappings(): void
+    {
+        // Use the correct path for fs_mappings data
+        $jsonPath = 'c:\\Users\\tuf\\Desktop\\audit-front-end\\data\\groupings\\grouping-1.json';
+        
+        if (!file_exists($jsonPath)) {
+            $this->command->error('FS Mapping JSON file not found: ' . $jsonPath);
+            return;
+        }
+        
+        $jsonData = file_get_contents($jsonPath);
+        $data = json_decode($jsonData, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->command->error('Failed to parse JSON: ' . json_last_error_msg());
+            return;
+        }
+        
+        if (empty($data)) {
+            $this->command->warn('No data found in JSON file');
+            return;
+        }
+        
+        $mappings = collect();
+
+        foreach ($data as $item) {
+            $mapping = FsMapping::firstOrCreate(
+                ['mapping_no' => $item['mappingNo']],
+                [
+                    'acc_code' => $item['accCode'],
+                    'fs_group' => $item['fsGroup'] ?? '',
+                    'fs_line' => $item['fsLine'],
+                    'ls' => $item['ls'] ?? '',
+                    'ls_name' => $item['lsName'] ?? '',
+                    'mapping_no' => $item['mappingNo'],
+                ]
+            );
+
+            $mappings->push($mapping);
+        }
+
+        $this->command->info("FS Mappings seeded: " . $mappings->count());
+    }
 }
